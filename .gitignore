@@ -69,3 +69,6 @@ $RECYCLE.BIN/
 # Project-specific merge artifact
 # -----------------------------------------------------------------------------
 ch32h417_dual.bin
+
+# Vendored zephyr-lang-rust module (fetched from GitHub)
+third_party/

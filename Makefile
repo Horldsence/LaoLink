@@ -22,6 +22,10 @@ BUILD_V5F := $(abspath build/v5f)
 SRC_V3F := $(abspath v3f)
 SRC_V5F := $(abspath v5f)
 
+# Vendored zephyr-lang-rust module providing Rust language support (CONFIG_RUST,
+# rust_cargo_application) for the V5F application.
+RUST_MODULE := $(abspath third_party/zephyr-lang-rust)
+
 OPENOCD_CFG ?= $(ZEPHYR_ROOT)/zephyr/boards/wch/ch32h417evt/support/openocd.cfg
 SERIAL_PORT ?= /dev/ttyACM0
 
@@ -61,7 +65,9 @@ build-v3f:
 	cd $(ZEPHYR_ROOT) && $(WEST) build -p always -b $(BOARD_V3F) -d $(BUILD_V3F) $(SRC_V3F)
 
 build-v5f:
-	cd $(ZEPHYR_ROOT) && $(WEST) build -p always -b $(BOARD_V5F) -d $(BUILD_V5F) $(SRC_V5F)
+	cd $(ZEPHYR_ROOT) && LIBCLANG_PATH=$${LIBCLANG_PATH:-/opt/homebrew/opt/llvm/lib} \
+		$(WEST) build -p always -b $(BOARD_V5F) -d $(BUILD_V5F) $(SRC_V5F) \
+		-- -DZEPHYR_EXTRA_MODULES=$(RUST_MODULE)
 
 build: build-v3f build-v5f
 

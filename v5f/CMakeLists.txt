@@ -3,4 +3,4 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 
 project(v5f)
 
-target_sources(app PRIVATE src/main.c)
+rust_cargo_application()

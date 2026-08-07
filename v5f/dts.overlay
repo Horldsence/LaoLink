@@ -9,8 +9,8 @@
 	chosen {
 		zephyr,sram = &sram0;
 		zephyr,flash = &flash0;
-		zephyr,console = &usart8;
-		zephyr,shell-uart = &usart8;
+		/* No console: USART8 is owned by the SUMP logic-analyzer
+		 * protocol running in the Rust application. */
 	};
 
 	leds {
@@ -52,7 +52,7 @@
 
 &usart8 {
 	status = "okay";
-	current-speed = <115200>;
+	current-speed = <921600>;
 	pinctrl-0 = <&usart8_default>;
 	pinctrl-names = "default";
 };

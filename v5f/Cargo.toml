@@ -6,7 +6,7 @@
 name = "rustapp"
 version = "0.1.0"
 edition = "2021"
-description = "CH32H417EVT V5F application: blink the on-board LED and print on USART8"
+description = "CH32H417EVT V5F application: 8-channel logic analyzer (UHSIF capture, SUMP over USART8)"
 license = "Apache-2.0 OR MIT"
 
 [lib]

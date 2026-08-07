@@ -14,5 +14,11 @@
 			drive-push-pull;
 			slew-rate = "max-speed-180mhz";
 		};
+		group2 {
+			/* USART8 RX on PB3 (AF11); no dt-binding macro exists
+			 * for it yet, so use the raw pinmux encoding. */
+			pinmux = <CH32H41X_PINMUX(PB, 3, 11)>;
+			bias-pull-up;
+		};
 	};
 };

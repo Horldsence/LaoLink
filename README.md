@@ -1,11 +1,11 @@
 # LaoLink 嵌入式部分
 
 ## 文件结构
-
+```
 /--
   |-V3F CH32H417 Qingke V3F 内核源码
   |-V5F CH32H417 Qingke V5F 内核源码
-
+```
 ## 软件结构
 
 freeRTOS
@@ -13,7 +13,7 @@ freeRTOS
 ## 功能规划
 
 ### CH32H417WEU6 (LaoLink)
-
+```
 数控电源输入输出    (GPIO IO 1pin 控制电源开关)
 数控电源输出控制    (IIC 控制)
 数字电流表电压表    (IIC 读取)
@@ -25,7 +25,7 @@ IIC扫描           (I3C 端口 扫描 2pin)
 ^
 | 通过USART连接
 v
-
+```
 
 ### CH32V208GBU6 (WCHLinkW)
 

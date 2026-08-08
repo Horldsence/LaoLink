@@ -11,8 +11,6 @@
 freeRTOS
 
 ## 功能规划
-
-### CH32H417WEU6 (LaoLink)
 ```
 数控电源输入输出    (GPIO IO 1pin 控制电源开关)
 数控电源输出控制    (IIC 控制)
@@ -25,13 +23,12 @@ IIC扫描           (I3C 端口 扫描 2pin)
 ^
 | 通过USART连接
 v
-```
 
-### CH32V208GBU6 (WCHLinkW)
+CH32V208GBU6 (WCHLinkW)
 
 下载器与无线下载器
 串口助手与无线串口助手
-
+```
 ## 引脚分配
 ### CH32H417WEU6
 ```C

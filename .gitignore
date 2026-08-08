@@ -1,0 +1,26 @@
+# Build output
+obj/
+Debug/
+Release/
+*.o
+*.d
+*.elf
+*.hex
+*.bin
+*.map
+*.lst
+*.su
+
+# MounRiver Studio / Eclipse workspace metadata
+.metadata/
+.settings/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.idea/
+.vscode/
+*.swp
+*~

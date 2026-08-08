@@ -21,18 +21,6 @@
 			{
 				"name": "Common",
 				"location": "../Common/Common"
-			},
-			{
-				"name": "Core",
-				"location": "../../../../../SRC/Core"
-			},
-			{
-				"name": "Debug",
-				"location": "../../../../../SRC/Debug"
-			},
-			{
-				"name": "Peripheral",
-				"location": "../../../../../SRC/Peripheral"
 			}
 		],
 		"removedResources": [

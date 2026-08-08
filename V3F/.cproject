@@ -132,6 +132,9 @@
                   <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/User}&quot;"/>
                   <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Peripheral/inc}&quot;"/>
                   <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Common}&quot;"/>
+                  <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Common/App}&quot;"/>
+                  <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Common/LogicAnalyzer}&quot;"/>
+                  <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Common/USB}&quot;"/>
                   <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/FreeRTOS}&quot;"/>
                   <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/FreeRTOS/include}&quot;"/>
                   <listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/FreeRTOS/portable/Common}&quot;"/>

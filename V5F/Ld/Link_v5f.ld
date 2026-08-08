@@ -18,6 +18,7 @@ MEMORY
 	RAM (xrw) : ORIGIN = (0x200C0000+512+256), LENGTH = (256K-512-256) /*DTCM RAM for .data .bss section and other*/ 
 	RAM_LOAD (xrw) : ORIGIN = (0x200C0000+512), LENGTH = 256           /* RAM for .load section*/
 	RAM_SHARED (xrw) : ORIGIN = (0x20178000), LENGTH = 32K             /* RAM for .shared section (same as V3)*/
+	SRAM (xrw) : ORIGIN = (0x20130000), LENGTH = 256K                  /* logic analyzer UHSIF/USB DMA buffers (.da1)*/
 }
 
 SECTIONS
@@ -215,6 +216,12 @@ SECTIONS
         PROVIDE( _eusrstack = .);
         __freertos_irq_stack_topV5 = .;		
     } >RAM 
+
+	.sram(NOLOAD) :
+	{	. = ALIGN(32);
+		*(.da1)
+		. = ALIGN(32);
+	} >SRAM
 
 }
 

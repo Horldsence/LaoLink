@@ -3,12 +3,39 @@
 ## 文件结构
 ```
 /--
-  |-V3F CH32H417 Qingke V3F 内核源码
-  |-V5F CH32H417 Qingke V5F 内核源码
+  |-Common/Common        双核共享代码
+  |  |-App/              应用层: hardware(硬件适配入口) + la_delay(RTOS安全延时)
+  |  |-LogicAnalyzer/    分析仪核心: 命令处理/数据泵 + UHSIF 配置与预编译库(.o)
+  |  |-USB/              USB 协议栈: USB3.0(USBSS) / USB2.0(USBHS) / 描述符
+  |  |-shared.h          核间共享数据
+  |-V3F CH32H417 Qingke V3F 内核源码 (User/main.c: 唤醒V5F + 心跳任务)
+  |-V5F CH32H417 Qingke V5F 内核源码 (User/main.c + la_tasks.c: 分析仪任务)
 ```
 ## 软件结构
 
 freeRTOS
+
+## 逻辑分析仪固件说明 (V5F 内核)
+
+基于 [CH32H417_Logic_Analyzer_Mini](../CH32H417_Logic_Analyzer_Mini) 参考工程移植,
+上位机兼容 U3LogicAnalyzer / PulseView (USB3.0 直连, 兼容 USB2.0)。
+
+```
+V3F (0x00000000, 64K): 唤醒 V5F + 心跳任务 (后续电源/屏幕/UI 功能)
+V5F (0x00010000, 128K): FreeRTOS 任务包装的逻辑分析仪
+  |- la_data_task  UHSIF/HSADC -> USB 高速数据搬运
+  |- la_cmd_task   USB 命令处理 (参数/启停/IAP)
+```
+
+- 8 通道数字采集: UHSIF PORT16-23 = PD10~PD15/PF0/PF1 (UFP0~UFP7), 时钟脚 PC0
+- 2 通道模拟采集: HSADC PC2/PC3; VIO18 阈值调压: DAC2/PA5
+- 状态灯: PB10 = UFP_LED0 (USB 连接), PB11 = UFP_LED1 (采集闪烁)
+- 调试 printf: PB4 (USART8); SWD 保持可用 (PB8/PB9)
+- UHSIF 底层库为预编译 `Common/Common/LogicAnalyzer/ch32h417_uhsif_it.o` (仅链接进 V5F)
+- 采样 DMA 缓冲区 (256K) 位于 SRAM 0x20130000-0x20170000 (V5F 链接脚本 `.da1` 段)
+- 注意: V5F 的 FreeRTOS 心跳在 SysTick1, 分析仪延时一律用 `la_delay.c` (SysTick0 忙等),
+  不要再调用 `Delay_Us/Delay_Ms`; 切换采样率会改 PLL, RTOS 延时会有比例漂移 (已知, 可接受)
+
 
 ## 功能规划
 ```
@@ -51,15 +78,8 @@ PE15    I3C_SDA
 PE14    I3C_SCL
 
 I2C:
-PC0     I2C2_SCL
-PC1     I2C2_SDA
-//
-// 如果电源和电压共用I2C下更换USART
-// 我们理论上可以做出来16通道的的逻辑分析仪
-// 但是需要给I2C做互斥锁
-//
-// PA13    I2C3_SDA
-// PA14    I2C3_SCL
+PA14    I2C3_SCL
+PA13    I2C3_SDA
 
 SPI:
 PD7     SPI1_MOSI
@@ -69,17 +89,9 @@ GPIO:
 PB0     POWER_CTRL
 PC2     ADC1-UHSIF
 PC3     ADC0-UHSIF
-//
-// 另外8路逻辑分析仪
-//
-// PA15
-// PA14
-// PA13
-// PC9
-// PC8
-// PC7
-// PC6
-// PF2
+PC0     UHSIF_CLK_1
+PB10    UFP_LED0
+PB11    UFP_LED1
 PF1     UFP7
 PF0     UFP6
 PD15    UFP5

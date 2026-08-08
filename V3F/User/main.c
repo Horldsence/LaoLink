@@ -1,19 +1,15 @@
 /********************************** (C) COPYRIGHT *******************************
- * File Name          : main_v3f.c
- * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2025/03/01
+ * File Name          : main.c
  * Description        : Main program body for V3F.
+ *                      LaoLink (CH32H417WEU6): the V3F core wakes up the V5F
+ *                      core (which runs the logic analyzer), then runs the
+ *                      LaoLink system tasks. A heartbeat task on PA1 is kept
+ *                      as a placeholder for the power/screen/UI functions.
  *********************************************************************************
  * Copyright (c) 2025 Nanjing Qinheng Microelectronics Co., Ltd.
  * Attention: This software (modified or not) and binary are used for
  * microcontroller manufactured by Nanjing Qinheng Microelectronics.
  *******************************************************************************/
-
-/*
- *@Note
- *task1 and task2 alternate printing
- */
 
 #include "debug.h"
 #include "FreeRTOS.h"
@@ -22,20 +18,17 @@
 #include "shared.h"
 
 /* Global define */
-#define TASK1_TASK_PRIO     5
-#define TASK1_STK_SIZE      256
-#define TASK2_TASK_PRIO     5
-#define TASK2_STK_SIZE      256
+#define HEARTBEAT_TASK_PRIO     5
+#define HEARTBEAT_STK_SIZE      256
 
 /* Global Variable */
-TaskHandle_t Task1Task_Handler;
-TaskHandle_t Task2Task_Handler;
+TaskHandle_t HeartbeatTask_Handler;
 
 
 /*********************************************************************
  * @fn      GPIO_Toggle_INIT
  *
- * @brief   Initializes GPIOA.0/1
+ * @brief   Initializes GPIOA.1 (heartbeat LED, placeholder).
  *
  * @return  none
  */
@@ -45,7 +38,7 @@ void GPIO_Toggle_INIT(void)
 
   RCC_HB2PeriphClockCmd(RCC_HB2Periph_GPIOA,ENABLE);
 
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_1;
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStructure.GPIO_Speed=GPIO_Speed_High;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
@@ -53,55 +46,19 @@ void GPIO_Toggle_INIT(void)
 
 
 /*********************************************************************
- * @fn      task1_task
+ * @fn      heartbeat_task
  *
- * @brief   task1 program.
+ * @brief   Heartbeat task, toggles PA1. Placeholder for the LaoLink
+ *          system functions (power control, screen, I2C/I3C scan...).
  *
- * @param  *pvParameters - Parameters point of task1
- *
- * @return  none
- */
-void task1_task(void *pvParameters)
-{
-    while(1)
-    {
-		if(HSEM_FastTake(HSEM_ID0) == READY)
-		{
-		for(u8 t=0; t<4; t++)
-		{
-			printf("Buffer_Sharing[%d] - %d\r\n",t,Buffer_Sharing[t]);
-			Buffer_Sharing[t] += 1;
-			for(int zF=0;zF<100;zF++)
-			{
-				__NOP();
-			}
-
-		}
-		printf("Data_Sharing - %x\r\n",Data_Sharing);
-		Data_Sharing += 1;
-		HSEM_ReleaseOneSem(HSEM_ID0, 0);
-		for(int z=0;z<100;z++)
-		{
-			__NOP();
-		}
-		}
-    }
-}
-
-/*********************************************************************
- * @fn      task2_task
- *
- * @brief   task2 program.
- *
- * @param  *pvParameters - Parameters point of task2
+ * @param  *pvParameters - task parameter (unused)
  *
  * @return  none
  */
-void task2_task(void *pvParameters)
+void heartbeat_task(void *pvParameters)
 {
     while(1)
     {
-        printf("------task2 entry\r\n");
         GPIO_ResetBits(GPIOA, GPIO_Pin_1);
         vTaskDelay(500);
         GPIO_SetBits(GPIOA, GPIO_Pin_1);
@@ -138,7 +95,7 @@ int main(void)
 	SystemInit();
 	SystemAndCoreClockUpdate();
 
-	USART_Printf_Init(115200);		
+	USART_Printf_Init(115200);
 	printf("1SystemClk:%d\r\n",SystemCoreClock);
 	printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
 
@@ -155,27 +112,20 @@ int main(void)
 	printf("FreeRTOS Kernel Version:%s\r\n",tskKERNEL_VERSION_NUMBER);
 
     GPIO_Toggle_INIT();
-    /* create two task */
-    xTaskCreate((TaskFunction_t )task2_task,
-                        (const char*    )"task2",
-                        (uint16_t       )TASK2_STK_SIZE,
-                        (void*          )NULL,
-                        (UBaseType_t    )TASK2_TASK_PRIO,
-                        (TaskHandle_t*  )&Task2Task_Handler);
-
-    xTaskCreate((TaskFunction_t )task1_task,
-                    (const char*    )"task1",
-                    (uint16_t       )TASK1_STK_SIZE,
+    /* create heartbeat task */
+    xTaskCreate((TaskFunction_t )heartbeat_task,
+                    (const char*    )"heartbeat",
+                    (uint16_t       )HEARTBEAT_STK_SIZE,
                     (void*          )NULL,
-                    (UBaseType_t    )TASK1_TASK_PRIO,
-                    (TaskHandle_t*  )&Task1Task_Handler);
+                    (UBaseType_t    )HEARTBEAT_TASK_PRIO,
+                    (TaskHandle_t*  )&HeartbeatTask_Handler);
     vTaskStartScheduler();
 
     while(1)
     {
         printf("shouldn't run at here!!\n");
 
-    }	
+    }
 
 #elif (Run_Core == Run_Core_V3F)
 
